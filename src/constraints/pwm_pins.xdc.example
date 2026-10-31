@@ -1,0 +1,250 @@
+# =============================================================================
+# pwm_pins.xdc.example  -  pwm_axi_ip 的 30 个引脚约束模板
+#                         pwm_out[0]..pwm_out[19] + gate_en[0]..gate_en[9]
+# -----------------------------------------------------------------------------
+# 本文件是“模板”。下面所有 PACKAGE_PIN 的值（<PIN_xx>）都是占位符，必须替换为
+# 你的栅极驱动板实际连到的引脚号。
+#
+# 成品文件放到哪里
+#   方法一：追加到 Zynq_Base_Platform 工程已有的约束文件末尾
+#       Zynq_Base_Platform.srcs/constrs_1/new/breath_led.xdc
+#   方法二：作为第二个约束文件加入工程
+#       Zynq_Base_Platform.srcs/constrs_1/new/pwm.xdc
+#
+# 端口名（必须完全一致）
+#   下面是 integration/add_pwm_ip_to_bd.tcl 在 Block Design 顶层导出的端口，
+#   端口名要与 Block Design 完全一致，连方括号一起写：
+#       pwm_out[0] .. pwm_out[19]    共 20 个 PWM 输出
+#       gate_en[0] .. gate_en[9]     共 10 个栅极驱动使能
+#   名字不匹配时 Vivado 会报 “No ports matched”，该引脚被静默忽略，
+#   随后 Vivado 可能随机分配引脚，或者由 DRC NSTD-1 / UCIO-1 让实现失败。
+#
+# =============================================================================
+# 位序映射表（与 RTL 输出、以及 PWM_EN 寄存器位映射完全一致）
+#
+#   桥号 i = 0..4，桥内顺序固定为 AH、AL、BH、BL：
+#
+#     pwm_out 位  | 桥 | 桥臂   | 开关 | 说明
+#     ------------+----+--------+------+---------------------------------------
+#     4*i + 0     | i  | 桥臂 A | AH   | A 半桥高边开关（上管）
+#     4*i + 1     | i  | 桥臂 A | AL   | A 半桥低边开关（下管）
+#     4*i + 2     | i  | 桥臂 B | BH   | B 半桥高边开关（上管）
+#     4*i + 3     | i  | 桥臂 B | BL   | B 半桥低边开关（下管）
+#
+#     gate_en 位  | 桥 | 桥臂   | 说明
+#     ------------+----+--------+----------------------------------------------
+#     2*i + 0     | i  | 桥臂 A | A 桥臂栅极驱动使能（与 PWM 波形无关）
+#     2*i + 1     | i  | 桥臂 B | B 桥臂栅极驱动使能（与 PWM 波形无关）
+#
+#   展开成每一路信号：
+#
+#     桥 0: pwm_out[0]=AH  pwm_out[1]=AL  pwm_out[2]=BH  pwm_out[3]=BL
+#           gate_en[0]=桥臂 A 使能   gate_en[1]=桥臂 B 使能
+#     桥 1: pwm_out[4]=AH  pwm_out[5]=AL  pwm_out[6]=BH  pwm_out[7]=BL
+#           gate_en[2]=桥臂 A 使能   gate_en[3]=桥臂 B 使能
+#     桥 2: pwm_out[8]=AH  pwm_out[9]=AL  pwm_out[10]=BH pwm_out[11]=BL
+#           gate_en[4]=桥臂 A 使能   gate_en[5]=桥臂 B 使能
+#     桥 3: pwm_out[12]=AH pwm_out[13]=AL pwm_out[14]=BH pwm_out[15]=BL
+#           gate_en[6]=桥臂 A 使能   gate_en[7]=桥臂 B 使能
+#     桥 4: pwm_out[16]=AH pwm_out[17]=AL pwm_out[18]=BH pwm_out[19]=BL
+#           gate_en[8]=桥臂 A 使能   gate_en[9]=桥臂 B 使能
+#
+#   注意：gate_en 只控制栅极驱动器的使能脚，不承载 PWM 波形；
+#         PWM 波形一律从 pwm_out 出来。
+#
+# =============================================================================
+# 互补关系与相位（接线前务必看懂）
+#
+#   一个“桥”就是一个 H 桥，包含两个桥臂（半桥）：
+#     - pwm_out[4*i+0] / pwm_out[4*i+1]  是一对互补对 = 桥臂 A（AH / AL）
+#     - pwm_out[4*i+2] / pwm_out[4*i+3]  是一对互补对 = 桥臂 B（BH / BL）
+#   一对互补对内部的开关永远不会同时导通（死区插在桥臂内部）。
+#
+#   该 H 桥按 锁定反相（lock anti-phase / 双极性）方式驱动，
+#   导通的是对角线上的两个开关，而不是同一个桥臂的上下管：
+#     - AH 与 BL 同相：AH+BL 同时导通 = 正向对角线（正转）
+#     - AL 与 BH 同相：AL+BH 同时导通 = 反向对角线（反转）
+#   也就是说：同一个桥里 AH 的波形与 BL 完全一致，AL 的波形与 BH 完全一致。
+#
+#   直通（shoot-through）只可能发生在“同一个桥臂”内部，
+#   而桥臂内部的死区由 IP 硬件保证，所以直通在结构上不可能发生。
+#
+# =============================================================================
+# 极性说明
+#   默认输出为高有效（1 = 开关导通），并且上电复幕后一直保持低电平，
+#   直到 CTRL.GLB_EN（寄存器 0x00 的 bit0）被置 1 才开始输出调制波形。
+#   如果栅极驱动器是低有效，请使用 CTRL.INV_PWM（0x00 的 bit1）取反全部
+#   20 路输出电平，不要改这个 XDC 文件。
+#
+# =============================================================================
+# 重要警告
+#   一对互补对的两根信号（4*i+0 与 4*i+1，或 4*i+2 与 4*i+3）必须接在
+#   同一个桥臂的两个开关上（高边/低边），绝对不能接到不同桥臂或不同桥上；
+#   gate_en[2*i+0] / gate_en[2*i+1] 也必须和对应桥臂的驱动芯片使能脚对应。
+#   引脚分配错误轻则波形错乱、电机不转，重则上下管同时导通直接烧桥。
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 桥 0：pwm_out[0]=AH  pwm_out[1]=AL  pwm_out[2]=BH  pwm_out[3]=BL
+#       gate_en[0]=桥臂 A 使能  gate_en[1]=桥臂 B 使能
+# -----------------------------------------------------------------------------
+set_property PACKAGE_PIN <PIN_00> [get_ports {pwm_out[0]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[0]}]
+
+set_property PACKAGE_PIN <PIN_01> [get_ports {pwm_out[1]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[1]}]
+
+set_property PACKAGE_PIN <PIN_02> [get_ports {pwm_out[2]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[2]}]
+
+set_property PACKAGE_PIN <PIN_03> [get_ports {pwm_out[3]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[3]}]
+
+set_property PACKAGE_PIN <PIN_EN0> [get_ports {gate_en[0]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[0]}]
+
+set_property PACKAGE_PIN <PIN_EN1> [get_ports {gate_en[1]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[1]}]
+
+# -----------------------------------------------------------------------------
+# 桥 1：pwm_out[4]=AH  pwm_out[5]=AL  pwm_out[6]=BH  pwm_out[7]=BL
+#       gate_en[2]=桥臂 A 使能  gate_en[3]=桥臂 B 使能
+# -----------------------------------------------------------------------------
+set_property PACKAGE_PIN <PIN_04> [get_ports {pwm_out[4]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[4]}]
+
+set_property PACKAGE_PIN <PIN_05> [get_ports {pwm_out[5]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[5]}]
+
+set_property PACKAGE_PIN <PIN_06> [get_ports {pwm_out[6]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[6]}]
+
+set_property PACKAGE_PIN <PIN_07> [get_ports {pwm_out[7]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[7]}]
+
+set_property PACKAGE_PIN <PIN_EN2> [get_ports {gate_en[2]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[2]}]
+
+set_property PACKAGE_PIN <PIN_EN3> [get_ports {gate_en[3]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[3]}]
+
+# -----------------------------------------------------------------------------
+# 桥 2：pwm_out[8]=AH  pwm_out[9]=AL  pwm_out[10]=BH pwm_out[11]=BL
+#       gate_en[4]=桥臂 A 使能  gate_en[5]=桥臂 B 使能
+# -----------------------------------------------------------------------------
+set_property PACKAGE_PIN <PIN_08> [get_ports {pwm_out[8]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[8]}]
+
+set_property PACKAGE_PIN <PIN_09> [get_ports {pwm_out[9]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[9]}]
+
+set_property PACKAGE_PIN <PIN_10> [get_ports {pwm_out[10]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[10]}]
+
+set_property PACKAGE_PIN <PIN_11> [get_ports {pwm_out[11]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[11]}]
+
+set_property PACKAGE_PIN <PIN_EN4> [get_ports {gate_en[4]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[4]}]
+
+set_property PACKAGE_PIN <PIN_EN5> [get_ports {gate_en[5]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[5]}]
+
+# -----------------------------------------------------------------------------
+# 桥 3：pwm_out[12]=AH pwm_out[13]=AL pwm_out[14]=BH pwm_out[15]=BL
+#       gate_en[6]=桥臂 A 使能  gate_en[7]=桥臂 B 使能
+# -----------------------------------------------------------------------------
+set_property PACKAGE_PIN <PIN_12> [get_ports {pwm_out[12]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[12]}]
+
+set_property PACKAGE_PIN <PIN_13> [get_ports {pwm_out[13]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[13]}]
+
+set_property PACKAGE_PIN <PIN_14> [get_ports {pwm_out[14]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[14]}]
+
+set_property PACKAGE_PIN <PIN_15> [get_ports {pwm_out[15]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[15]}]
+
+set_property PACKAGE_PIN <PIN_EN6> [get_ports {gate_en[6]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[6]}]
+
+set_property PACKAGE_PIN <PIN_EN7> [get_ports {gate_en[7]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[7]}]
+
+# -----------------------------------------------------------------------------
+# 桥 4：pwm_out[16]=AH pwm_out[17]=AL pwm_out[18]=BH pwm_out[19]=BL
+#       gate_en[8]=桥臂 A 使能  gate_en[9]=桥臂 B 使能
+# -----------------------------------------------------------------------------
+set_property PACKAGE_PIN <PIN_16> [get_ports {pwm_out[16]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[16]}]
+
+set_property PACKAGE_PIN <PIN_17> [get_ports {pwm_out[17]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[17]}]
+
+set_property PACKAGE_PIN <PIN_18> [get_ports {pwm_out[18]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[18]}]
+
+set_property PACKAGE_PIN <PIN_19> [get_ports {pwm_out[19]}]
+set_property IOSTANDARD LVCMOS33  [get_ports {pwm_out[19]}]
+
+set_property PACKAGE_PIN <PIN_EN8> [get_ports {gate_en[8]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[8]}]
+
+set_property PACKAGE_PIN <PIN_EN9> [get_ports {gate_en[9]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {gate_en[9]}]
+
+# =============================================================================
+# 过流保护输入 oc_n[4:0] ：每个 H 桥一路，**低有效**，必须开内部上拉
+#
+#   为什么低有效 + 上拉：
+#     - IP 内部也接了上拉，引脚悬空或断线时读为 1 = 正常，不会误触发关断；
+#     - 反之如果做成高有效，断线会被当成过流，整机一上电就锁死；
+#     - 过流信号源必须是**开漏/集电极开路**输出：分流电阻比较器（如 LM393、
+#       INA240 + 比较器）或栅极驱动芯片的 nFAULT/OC 脚，直接接到这几个引脚。
+#
+#   oc_n[i] = 0  ->  第 i 个 H 桥过流
+#   只有**该桥**会停：它的 4 路 PWM 在约 2 ns 内（一个 LUT 延迟，不经过时钟、
+#   不经过寄存器、不经过 AXI 总线）全部到关断电平，它的 2 路 gate_en 同时拉低；
+#   其余 4 个桥完全不受影响，继续按各自的占空比跑。
+#   故障会锁存，必须在软件侧写 CTRL.GLB_EN 产生一次 0->1 才恢复。
+#
+#   !! 这几个脚要接成 PL 直连引脚，不要接到 PS 的 EMIO/GPIO 上 ——
+#      走 PS 的话关断要几十 µs，MOSFET 早就炸了。
+# =============================================================================
+
+set_property PACKAGE_PIN <PIN_OC0> [get_ports {oc_n[0]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {oc_n[0]}]
+set_property PULLUP true           [get_ports {oc_n[0]}]
+
+set_property PACKAGE_PIN <PIN_OC1> [get_ports {oc_n[1]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {oc_n[1]}]
+set_property PULLUP true           [get_ports {oc_n[1]}]
+
+set_property PACKAGE_PIN <PIN_OC2> [get_ports {oc_n[2]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {oc_n[2]}]
+set_property PULLUP true           [get_ports {oc_n[2]}]
+
+set_property PACKAGE_PIN <PIN_OC3> [get_ports {oc_n[3]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {oc_n[3]}]
+set_property PULLUP true           [get_ports {oc_n[3]}]
+
+set_property PACKAGE_PIN <PIN_OC4> [get_ports {oc_n[4]}]
+set_property IOSTANDARD LVCMOS33   [get_ports {oc_n[4]}]
+set_property PULLUP true           [get_ports {oc_n[4]}]
+
+# =============================================================================
+# 可选：让边沿更快（提高开关速度，但会增大 EMI，请确认板级信号质量后再启用）
+# =============================================================================
+# set_property SLEW FAST     [get_ports {pwm_out[*]}]
+# set_property DRIVE 12      [get_ports {pwm_out[*]}]
+# set_property SLEW FAST     [get_ports {gate_en[*]}]
+# set_property DRIVE 8       [get_ports {gate_en[*]}]
+
+# =============================================================================
+# 自检清单
+#   1. 35 个端口全部赋了 PACKAGE_PIN（20 个 pwm_out + 10 个 gate_en + 5 个 oc_n）。
+#   2. 每一对互补对（4i+0/4i+1、4i+2/4i+3）接在同一个桥臂的高边/低边。
+#   3. gate_en[2i+0]、gate_en[2i+1] 与对应桥臂驱动芯片使能脚一一对应。
+#   4. 只用 CTRL.INV_PWM 处理低有效驱动器，不要在这里改极性。
+# =============================================================================

@@ -1,0 +1,4 @@
+domain_path: D:\vivado\project\PS_code\electromagnetic-brake-master\vitis2\soc_923\export\soc_923\sw\freertos_ps7_cortexa9_0
+app_src_dir: D:\vivado\Vitis\2024.2\data\embeddedsw\lib\sw_apps\empty_application
+template: empty_application
+lang: c

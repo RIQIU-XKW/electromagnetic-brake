@@ -1,0 +1,1214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget</class>
+ <widget class="QWidget" name="Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>820</width>
+    <height>560</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>电磁制动试验平台v1.0</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayoutMain">
+   <item>
+    <widget class="QLabel" name="labelTitle">
+     <property name="font">
+      <font>
+       <family>Microsoft YaHei</family>
+       <pointsize>20</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>电磁制动试验平台</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="lineTitle">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tabAcquire">
+      <attribute name="title">
+       <string>实时采集数据</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayoutAcquire">
+       <item>
+        <widget class="QGroupBox" name="groupBoxDisplay">
+         <property name="title">
+          <string>实时数据显示</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayoutDisplay">
+          <item>
+           <widget class="QSplitter" name="splitterDisplay">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="childrenCollapsible">
+             <bool>false</bool>
+            </property>
+            <widget class="QPlainTextEdit" name="plainTextRecv">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="maximumBlockCount">
+              <number>5000</number>
+             </property>
+            </widget>
+            <widget class="QSplitter" name="splitterPlots">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="childrenCollapsible">
+              <bool>false</bool>
+             </property>
+             <widget class="QWidget" name="widgetPlotLeft" native="true">
+              <layout class="QVBoxLayout" name="verticalLayoutPlotLeft">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayoutLeftCurves">
+                 <item>
+                  <widget class="QLabel" name="labelCurves">
+                   <property name="toolTip">
+                    <string>左边的图画电气量: 线圈 1~5 电流(A) 和母线电压(V)。这张图按自己显示中的曲线自动缩放纵轴。Ctrl+双击这张图 = 铺满画布 / 还原。</string>
+                   </property>
+                   <property name="text">
+                    <string>曲线:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBoxCoil1">
+                   <property name="text">
+                    <string>线圈1</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBoxCoil2">
+                   <property name="text">
+                    <string>线圈2</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBoxCoil3">
+                   <property name="text">
+                    <string>线圈3</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBoxCoil4">
+                   <property name="text">
+                    <string>线圈4</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBoxCoil5">
+                   <property name="text">
+                    <string>线圈5</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBoxVoltage">
+                   <property name="toolTip">
+                    <string>母线电压 vbus: 来自 ADS8688 的 CH5, 下位机已按 11:1 分压比还原成母线电压, 单位 V, 画在左图。板子发的 DATA 行第 8 个数就是它。</string>
+                   </property>
+                   <property name="text">
+                    <string>电压</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacerLeftCurves">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>16</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButtonMaxLeft">
+                   <property name="minimumSize">
+                    <size>
+                     <width>72</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>72</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="toolTip">
+                    <string>把**左边这张图**铺满整个绘图区(隐藏右图), 再点一次还原成左右双图。退出铺满的另一种办法: 按 Esc。</string>
+                   </property>
+                   <property name="text">
+                    <string>铺满</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="PlotWidget" name="plotWidget" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>260</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="widgetPlotRight" native="true">
+              <layout class="QVBoxLayout" name="verticalLayoutPlotRight">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayoutRightCurves">
+                 <item>
+                  <widget class="QLabel" name="labelCurvesMover">
+                   <property name="toolTip">
+                    <string>右边的图画动子: 动子速度(mm/s) 和动子位移(mm)。这张图按自己显示中的曲线自动缩放纵轴, 和左边电流的刻度互不影响。Ctrl+双击这张图 = 铺满画布 / 还原。</string>
+                   </property>
+                   <property name="text">
+                    <string>曲线:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBoxSpeed">
+                   <property name="toolTip">
+                    <string>动子速度(mm/s): 板子 DATA 行第 7 个数, 画在右图。报的是**速率**(取绝对值): 位移一路减小时 Δx 是负的, 取绝对值之后曲线才是"先加速后减速"的正峰。只有上一拍和当前拍都在"有效跟踪区"(380..2020 mV)才算速度; 丢失目标时板子发 0, 状态跳变的那一拍也发 0(清位置缓存, 不拿跨越丢失段的两点算假速度)。</string>
+                   </property>
+                   <property name="text">
+                    <string>动子速度</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkBoxLaser">
+                   <property name="toolTip">
+                    <string>动子位移(mm): 板子 DATA 行第 9 个数, 画在右图。下位机按两点标定做直线插值 x = x1 + (x2-x1)/(y2-y1) * (V-y1), 现在这组是 0.732 V -> 0 mm、1.143 V -> 480 mm; 四个数在 service_ads.h 的 SVC_ADS_LASER_X1_MM / X2_MM / Y1_V / Y2_V 里改。⚠ 丢失目标时板子发的是**上一拍的有效位移**(速度那一栏才是 0), 所以曲线会走平。⚠ 它和动子速度共用右图的**同一根纵轴**: 速度量级大时位移会被压扁, 想单独看清就把"动子速度"那个勾去掉。</string>
+                   </property>
+                   <property name="text">
+                    <string>动子位移</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacerRightCurves">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>16</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButtonMaxRight">
+                   <property name="minimumSize">
+                    <size>
+                     <width>72</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>72</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="toolTip">
+                    <string>把**右边这张图**铺满整个绘图区(隐藏左图), 再点一次还原成左右双图。退出铺满的另一种办法: 按 Esc。</string>
+                   </property>
+                   <property name="text">
+                    <string>铺满</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="PlotWidget" name="plotWidgetMover" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>260</width>
+                   <height>200</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="frameCtrl">
+         <property name="minimumSize">
+          <size>
+           <width>196</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>230</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Shape::NoFrame</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayoutCtrl">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
+           <number>4</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutLed">
+            <item>
+             <widget class="LedIndicator" name="ledIndicator" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelLink">
+              <property name="text">
+               <string>未连接</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacerLed">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutIp">
+            <item>
+             <widget class="QLabel" name="labelIp">
+              <property name="minimumSize">
+               <size>
+                <width>56</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>目标IP</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEditIp">
+              <property name="text">
+               <string>192.168.1.10</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutPort">
+            <item>
+             <widget class="QLabel" name="labelPort">
+              <property name="minimumSize">
+               <size>
+                <width>56</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>端口号</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxPort">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>65535</number>
+              </property>
+              <property name="value">
+               <number>7</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutLevel">
+            <item>
+             <widget class="QLabel" name="labelLevel">
+              <property name="minimumSize">
+               <size>
+                <width>56</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>制动强度</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxLevel">
+              <property name="currentIndex">
+               <number>1</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>低 (30%)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>中 (50%)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>高 (70%)</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutLaunchSpeed">
+            <item>
+             <widget class="QLabel" name="labelLaunchSpeed">
+              <property name="minimumSize">
+               <size>
+                <width>56</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>发射速度</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxLaunchSpeed">
+              <property name="toolTip">
+               <string>对应原 STM32 工程的 SS1..SS6 六档(0.5~1.0 m/s)。&quot;发射小车&quot;和&quot;回原点&quot;都用这个速度。</string>
+              </property>
+              <property name="currentIndex">
+               <number>3</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>0.5 m/s</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>0.6 m/s</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>0.7 m/s</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>0.8 m/s</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>0.9 m/s</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1.0 m/s</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonConnect">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>连接网口</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacerTop">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Policy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>10</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonStart">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>开始采集</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonLaunchCar">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>走 RS-485 直线电机: 重新初始化 + 使能 + 设速度 + 设目标位置 + 启动定位</string>
+            </property>
+            <property name="text">
+             <string>发射小车</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonBrake">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>启动制动</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacerMid">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Policy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonSnapshot">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>28</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>曲线截图</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonClear">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>28</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>清除缓存区</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonStop">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>28</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>停止</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacerBottom">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabPreset">
+      <attribute name="title">
+       <string>控制参数预设</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayoutPreset">
+       <item>
+        <widget class="QScrollArea" name="scrollAreaPreset">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>911</width>
+            <height>1013</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayoutPresetContent">
+           <item>
+            <widget class="QGroupBox" name="groupBoxBrakeDuty">
+             <property name="title">
+              <string>制动占空比 / 死区(五路 H 桥同步: 左桥常开 + 右桥斩波)</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayoutBrakeDuty">
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelBrakeDuty">
+                <property name="text">
+                 <string>占空比(Q4)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1" colspan="3">
+               <widget class="QSlider" name="sliderBrakeDuty">
+                <property name="toolTip">
+                 <string>拖动即时下发 [0xDA][高字节][低字节][0xDB], 取值 0..70(%) —— 现场限制不超过 70%。五路桥用同一个占空比: 制动开着时立刻生效, 没开则先记住, 等 0xA0+0xA1 启动时使用。</string>
+                </property>
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>70</number>
+                </property>
+                <property name="value">
+                 <number>30</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="tickPosition">
+                 <enum>QSlider::TickPosition::TicksBelow</enum>
+                </property>
+                <property name="tickInterval">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="4">
+               <widget class="QLabel" name="labelBrakeDutyValue">
+                <property name="text">
+                 <string>30 %</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="labelBrakeDead">
+                <property name="text">
+                 <string>死区</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QSpinBox" name="spinBoxBrakeDeadNs">
+                <property name="toolTip">
+                 <string>插入死区时长(ns)。20 ns = 1 个 aclk 周期, 范围 100..10000 ns: 小于 100 ns 等于没插死区(上下管直通风险), 会被夹到 100 ns 或被下位机拒绝; 占空比为 0 时死区强制为 0。</string>
+                </property>
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+                <property name="singleStep">
+                 <number>20</number>
+                </property>
+                <property name="value">
+                 <number>500</number>
+                </property>
+                <property name="suffix">
+                 <string> ns</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="pushButtonApplyBrakeDead">
+                <property name="text">
+                 <string>下发死区</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3" colspan="2">
+               <widget class="QLabel" name="labelBrakeTip">
+                <property name="text">
+                 <string>占空比帧 0xDA+16bit+0xDB / 死区帧 0xDC+16bit+0xDD; 上电默认制动关闭</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="labelBrakeZero">
+                <property name="text">
+                 <string>电流零点</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1" colspan="2">
+               <widget class="QPushButton" name="pushButtonBrakeZero">
+                <property name="toolTip">
+                 <string>发 0xE3: 在**制动关闭、线圈无电流**时采 2 s 电压, 把这 5 个电压设成各自的归零电压 —— 之后静止时 5 路电流读数应该是 0.000 A。要求正在采样(0xE0)且制动关闭(0xA5); 否则板子会拒绝。</string>
+                </property>
+                <property name="text">
+                 <string>电流零点校准 (0xE3)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3" colspan="2">
+               <widget class="QLabel" name="labelBrakeZeroTip">
+                <property name="text">
+                 <string>完成后板子回一行 "ads zero (mV): ...", 即各路归零电压</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxCurrentCmd">
+             <property name="title">
+              <string>电流指令发送(5 路 PID 共用同一目标, 帧 0xBA+16bit mA+0xAB)</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayoutCurrentCmd">
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelCurrentCmd">
+                <property name="text">
+                 <string>目标电流</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1" colspan="3">
+               <widget class="QSlider" name="sliderCurrentCmd">
+                <property name="toolTip">
+                 <string>拖动即下发电流指令帧 [0xBA][低字节][高字节][0xAB], 数据 = 目标电流(mA), 范围 0..15000。5 个桥共用这条指令; 0 mA = 停止(下位机把占空比爬到 0 后关桥输出)。</string>
+                </property>
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>15000</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
+                <property name="pageStep">
+                 <number>500</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="tickPosition">
+                 <enum>QSlider::TickPosition::TicksBelow</enum>
+                </property>
+                <property name="tickInterval">
+                 <number>1500</number>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="4">
+               <widget class="QLabel" name="labelCurrentCmdValue">
+                <property name="text">
+                 <string>0.00 A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="pushButtonCurrentZero">
+                <property name="text">
+                 <string>电流归零 (0 A)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1" colspan="4">
+               <widget class="QLabel" name="labelCurrentCmdTip">
+                <property name="text">
+                 <string>下位机 PID: 误差 = 目标 − 实测; 5 路独立状态, 占空比上限 37/40/28/45/75 %; 积分浮点 + 抗饱和 + 每拍爬坡限速</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxLed">
+             <property name="title">
+              <string>4 路呼吸灯(breath_led IP: LED0=K16 · LED1=J16 · LED2=K14 · LED3=J14)</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayoutLed">
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="checkBoxLed0">
+                <property name="toolTip">
+                 <string>LED0 = K16。它同时被板子当作&quot;网口在线&quot;指示灯: 上位机连上/断开时板子会自动点亮/熄灭它一次, 两次变化之间以这里的勾选为准。</string>
+                </property>
+                <property name="text">
+                 <string>LED0 (K16 · 网口在线)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QCheckBox" name="checkBoxLed1">
+                <property name="text">
+                 <string>LED1 (J16)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QCheckBox" name="checkBoxLed2">
+                <property name="text">
+                 <string>LED2 (K14)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QCheckBox" name="checkBoxLed3">
+                <property name="text">
+                 <string>LED3 (J14)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="labelLedFreq">
+                <property name="text">
+                 <string>共享呼吸频率 (Hz)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QSpinBox" name="spinBoxLedFreq">
+                <property name="toolTip">
+                 <string>四路共用一个频率(IP 里只有一个 PERIOD 寄存器)。这个数不是&quot;每秒闪几下&quot;: 明暗周期 = 100000 / 本值 毫秒, 所以 100 ≈ 1 s, 1000 ≈ 100 ms(最快)。范围 10..1000, 越界会被板子拒绝。</string>
+                </property>
+                <property name="minimum">
+                 <number>10</number>
+                </property>
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
+                <property name="value">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="pushButtonLedApply">
+                <property name="toolTip">
+                 <string>发 0xFE &lt;频率/10&gt; + 0xFF &lt;勾选掩码&gt;。掩码 bit0..3 依次对应 LED0..3。</string>
+                </property>
+                <property name="text">
+                 <string>下发勾选 (0xFF)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QPushButton" name="pushButtonLedStat">
+                <property name="toolTip">
+                 <string>发 0xF4 读板子上的真实掩码和频率, 并按回复回填上面的勾选框和频率(板子才是准的)。</string>
+                </property>
+                <property name="text">
+                 <string>读板子状态 (0xF4)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="pushButtonLedAllOn">
+                <property name="text">
+                 <string>四路全亮</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="pushButtonLedAllOff">
+                <property name="text">
+                 <string>四路全灭</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="4">
+               <widget class="QLabel" name="labelLedHint">
+                <property name="text">
+                 <string>提示: 四路共用一个呼吸频率(IP 里只有一组斜坡计数器、一个 PERIOD 寄存器), 所以每颗灯只有&quot;灭&quot;和&quot;按共享频率呼吸&quot;两种状态 —— 做不到这颗快、那颗慢, 也没有&quot;常亮不呼吸&quot;。老命令 LED_STA_1/2/3 只改频率并保证至少有一颗亮, 不会关掉你在这里点亮的其它灯; LED_STA_0 是四路全灭。</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           
+           <item>
+            <widget class="QGroupBox" name="groupBoxComm">
+             <property name="title">
+              <string>自检与调试</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayoutComm">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="pushButtonPing">
+                <property name="text">
+                 <string>PING</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="pushButtonStatus">
+                <property name="text">
+                 <string>STATUS</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0" colspan="3">
+               <widget class="QCheckBox" name="checkBoxDemo">
+                <property name="text">
+                 <string>本地模拟数据(不接板子, 用于演示曲线)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QSpinBox" name="spinBoxDemoPeriod">
+                <property name="suffix">
+                 <string> ms</string>
+                </property>
+                <property name="minimum">
+                 <number>10</number>
+                </property>
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
+                <property name="value">
+                 <number>50</number>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="4">
+               <widget class="QCheckBox" name="checkBoxShowTelemetry">
+                <property name="toolTip">
+                 <string>不勾选时: 遥测数据只进曲线, 不往接收区刷 —— 这样命令和回复才看得见</string>
+                </property>
+                <property name="text">
+                 <string>接收区显示遥测数据行(会刷屏, 默认只进曲线)</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxDisplayCfg">
+             <property name="title">
+              <string>显示设置</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayoutDisplayCfg">
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelXTitle">
+                <property name="text">
+                 <string>横轴标题</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="lineEditXTitle">
+                <property name="text">
+                 <string>时间</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="labelYMin">
+                <property name="text">
+                 <string>纵轴下限</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxYMin">
+                <property name="minimum">
+                 <double>-1000000.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>1000000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>-5.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="labelYMax">
+                <property name="text">
+                 <string>纵轴上限</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxYMax">
+                <property name="minimum">
+                 <double>-1000000.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>1000000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>60.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="labelXSpan">
+                <property name="text">
+                 <string>横轴窗口</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QSpinBox" name="spinBoxXSpan">
+                <property name="suffix">
+                 <string> 点</string>
+                </property>
+                <property name="minimum">
+                 <number>10</number>
+                </property>
+                <property name="maximum">
+                 <number>100000</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
+                <property name="value">
+                 <number>100</number>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QPushButton" name="pushButtonApplyDisplay">
+                <property name="text">
+                 <string>应用显示设置</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="4">
+               <widget class="QCheckBox" name="checkBoxAutoScaleY">
+                <property name="toolTip">
+                 <string>线圈 1~5 画的是**线圈电流(A)**(下位机按 I = (1.5V - 2.5)*10 换算过); "速度"那条(板子 DATA 行第 7 个数)是 CH6 引脚的真实电压(V), "电压"那条(第 8 个数)是母线电压(V, 已按 11:1 还原)。几组量纲差很多, 手动纵轴很容易把某一组压成一条直线, 默认打开自动缩放, 按当前勾选的曲线自动定范围。</string>
+                </property>
+                <property name="text">
+                 <string>纵轴自动缩放(按当前显示的曲线)</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacerPreset">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>plotwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LedIndicator</class>
+   <extends>QWidget</extends>
+   <header>ledindicator.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

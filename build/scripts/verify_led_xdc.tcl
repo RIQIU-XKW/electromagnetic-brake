@@ -1,0 +1,153 @@
+# =============================================================================
+# Verify the LED constraints in base_system_pins.xdc (port name led[3:0]).
+#
+#   1) open project, run RTL elaboration, list the real top-level ports
+#      (proves the port is led[3:0] and not the old scalar led_0)
+#   2) actually source the XDC files and check for Tcl errors
+#      (an XDC error aborts the rest of the file silently!)
+#   3) read back PACKAGE_PIN / IOSTANDARD of led[0..3] and check pin conflicts
+#
+# Usage: vivado -mode batch -source build\scripts\verify_led_xdc.tcl \
+#               -nojournal -log verify_led_xdc.log
+#
+# NOTE: this file must stay pure ASCII -- Vivado on Windows uses the GBK code
+#       page, and non-ASCII bytes in a -source'd Tcl file can abort with
+#       "[Common 17-180] Spawn failed: Illegal byte sequence".
+# =============================================================================
+
+set script_dir [file dirname [file normalize [info script]]]
+set repo       [file normalize [file join $script_dir .. ..]]
+
+set proj    [file join $repo build vivado_project Zynq_Base_Platform.xpr]
+set pins    [file join $repo src constraints base_system_pins.xdc]
+set pwmxdc  [file join $repo src constraints pwm.xdc]
+set report  [file join $repo build verify_led_xdc_report.txt]
+
+foreach f [list $proj $pins $pwmxdc] {
+    if {![file exists $f]} {
+        puts "ERROR: missing input file: $f"
+        exit 2
+    }
+}
+
+set fails 0
+set lines {}
+
+proc say {msg} {
+    global lines
+    lappend lines $msg
+    puts $msg
+}
+
+# Conditions must be evaluated at the call site and passed as a boolean:
+# writing the expression inside {} passes a string and raises
+# "expected boolean value but got ...".
+proc check {ok msg} {
+    global fails
+    if {$ok} {
+        say "  \[PASS\] $msg"
+    } else {
+        say "  \[FAIL\] $msg"
+        incr fails
+    }
+}
+
+say "########## 1. open project + RTL elaboration ##########"
+open_project $proj
+say "TopModule = [get_property TOP [current_fileset]]"
+
+if {[catch {synth_design -rtl -top base_system_wrapper -name rtl_check} err]} {
+    say "RTL elaboration FAILED: $err"
+    close_project
+    exit 2
+}
+
+say ""
+say "---- top-level ports starting with led ----"
+set ledports [get_ports -quiet led*]
+set names {}
+foreach p $ledports {
+    set n [get_property NAME $p]
+    lappend names $n
+    say "    $n"
+}
+
+say ""
+say "---- for comparison: LS_I ----"
+foreach p [get_ports -quiet LS_I*] { say "    [get_property NAME $p]" }
+
+say ""
+say "########## 2. port-name assertions ##########"
+check {[lsearch -exact $names "led\[0\]"] >= 0} "top port led\[0\] exists"
+check {[lsearch -exact $names "led\[1\]"] >= 0} "top port led\[1\] exists"
+check {[lsearch -exact $names "led\[2\]"] >= 0} "top port led\[2\] exists"
+check {[lsearch -exact $names "led\[3\]"] >= 0} "top port led\[3\] exists"
+check {[lsearch -exact $names "led_0"] < 0}  "old scalar port led_0 is gone"
+check {[llength $names] == 4} "led is exactly 4 bits (got [llength $names])"
+
+say ""
+say "########## 3. source the XDC files for real ##########"
+set rc [catch {source $pins} xdcerr]
+check {$rc == 0} "source base_system_pins.xdc raised no Tcl error (rc=$rc $xdcerr)"
+
+set rc2 [catch {source $pwmxdc} pwmrr]
+check {$rc2 == 0} "source pwm.xdc raised no Tcl error (rc=$rc2 $pwmrr)"
+
+say ""
+say "########## 4. read back LED pin properties ##########"
+foreach {pname pin} {led\[0\] K16 led\[1\] J16 led\[2\] K14 led\[3\] J14} {
+    set p [get_ports -quiet $pname]
+    if {[llength $p] != 1} {
+        check 0 "port $pname resolved to [llength $p] objects (expected 1)"
+        continue
+    }
+    set gotpin [get_property PACKAGE_PIN $p]
+    set gotio  [get_property IOSTANDARD $p]
+    check {$gotpin eq $pin} "$pname PACKAGE_PIN = '$gotpin' (expected $pin)"
+    check {$gotio eq "LVCMOS33"} "$pname IOSTANDARD = '$gotio' (expected LVCMOS33)"
+}
+
+say ""
+say "########## 5. pin conflict check (K16/J16/K14/J14) ##########"
+foreach pin {K16 J16 K14 J14} {
+    set hit [get_ports -quiet -filter "PACKAGE_PIN == $pin"]
+    set n [llength $hit]
+    set lst {}
+    foreach h $hit { lappend lst [get_property NAME $h] }
+    check {$n == 1} "$pin assigned to exactly 1 port: $lst"
+}
+
+say ""
+say "########## 6. unconstrained ports ##########"
+set unplaced {}
+foreach p [get_ports] {
+    if {[get_property PACKAGE_PIN $p] eq ""} { lappend unplaced [get_property NAME $p] }
+}
+say "  unplaced ports ([llength $unplaced]): $unplaced"
+
+say ""
+say "########## 7. Vivado message counts ##########"
+foreach sev {ERROR CRITICAL\ WARNING WARNING} {
+    set c [get_msg_config -severity $sev -count]
+    say "  $sev = $c"
+}
+
+say ""
+if {$fails == 0} {
+    say "########## RESULT: ALL PASS ##########"
+} else {
+    say "########## RESULT: $fails FAILED ##########"
+}
+
+# Report is written as UTF-8 (kept ASCII here to stay codepage-safe)
+set fh [open $report w]
+fconfigure $fh -encoding utf-8
+puts $fh "# LED XDC verification report (generated by verify_led_xdc.tcl)"
+puts $fh "# Expectation: port led[3:0], 4 bits, pins K16/J16/K14/J14, LVCMOS33, no XDC error"
+puts $fh ""
+foreach l $lines { puts $fh $l }
+close $fh
+puts "report written: $report"
+
+close_project
+exit [expr {$fails == 0 ? 0 : 1}]

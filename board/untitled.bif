@@ -1,0 +1,7 @@
+//arch = zynq; split = false; format = BIN
+the_ROM_image:
+{
+	[bootloader]D:\vivado\project\PS_code\electromagnetic-brake-master\vitis2\soc_923\export\soc_923\sw\boot\fsbl.elf
+	D:\vivado\project\PS_code\electromagnetic-brake-master\vitis2\app923\_ide\bitstream\base_system_10.28.bit
+	D:\vivado\project\PS_code\electromagnetic-brake-master\vitis2\app923\build\app923.elf
+}
